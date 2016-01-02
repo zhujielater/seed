@@ -1,0 +1,13 @@
+<h1>All Ideas</h1>
+
+<ul id="ideas">
+  <% @articles.each do |article| %>
+    <li>
+      <!-- hope to list -
+      # symbol, date, price, cur_price, comment -->
+      <%= link_to article.symbol, article_path(article) %>
+    </li>
+  <% end %>
+</ul>
+
+<%= link_to "Create a New Idea", new_article_path %>
