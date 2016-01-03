@@ -45,9 +45,25 @@
               cur_price = json.query.results.quote[i].LastTradePriceOnly;
               row.cells[3].innerText = cur_price;
               if (cur_price > 0 ){
-                  row.cells[4].innerText = ((cur_price / org_price - 1) * 100).toFixed(2) + "%";  
+                  row.cells[4].innerText = ((cur_price / org_price - 1) * 100).toFixed(2) + "%";
               }
           }
     };
     $.getJSON(url,callback);
+    var url2 = "https://api.bitcoinaverage.com/ticker/all";
+    var callback2 = function(json) {
+          //alert(json.USD.last);
+          var table = document.getElementById("tab1").getElementsByTagName('tbody')[0];
+          for (var i = 0, row; row = table.rows[i]; i++) {
+            if (row.cells[0].innerText.toUpperCase()=='BTC') {
+              org_price = row.cells[2].innerText;
+              cur_price = json.USD.last;
+              row.cells[3].innerText = cur_price;
+              if (cur_price > 0 ){
+                  row.cells[4].innerText = ((cur_price / org_price - 1) * 100).toFixed(2) + "%";
+              }
+            }
+          }
+    };
+    $.getJSON(url2,callback2);
 </script>
