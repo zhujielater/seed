@@ -1,24 +1,53 @@
 <h1>All Ideas</h1>
 
-<table border="1">
-  <tr>
-    <th>Symbol</th>
-    <th>Date</th>
-    <th>Price</th>
-    <th>Cur Price</th>
-    <th>% Chg</th>
-    <th>Comment</th>
-  </tr>
+<table border="1" id="tab1">
+  <thead>
+    <tr>
+      <th>Symbol</th>
+      <th>Date</th>
+      <th>Price</th>
+      <th>Cur Price</th>
+      <th>% Chg</th>
+      <th>Comment</th>
+    </tr>
+  </thead>
+  <tbody>
   <% @articles.each do |article| %>
     <tr>
       <td><%= link_to article.symbol, article_path(article) %></td>
       <td><%= article.date %></td>
       <td class="number"><%= article.price %></td>
       <td class="number"></td>
-      <td></td>
+      <td class="number"></td>
       <td><%= article.comment %></td>
     </tr>
   <% end %>
+  </tbody>
 </table>
 <br/>
 <%= link_to "Create a New Idea", new_article_path %>
+
+<script type="text/javascript">
+    var s = [];
+    var table = document.getElementById("tab1").getElementsByTagName('tbody')[0];
+    for (var i = 0, row; row = table.rows[i]; i++) {
+        s[i] = row.cells[0].innerText;
+    }
+    var symbols = "'" + s.join("','") + "'";
+    //alert(symbols);
+    //var symbols = '"MSFT","GOOG","SALE","BTC"';
+    var url = "https://query.yahooapis.com/v1/public/yql?q=select%20symbol%2CLastTradePriceOnly%20from%20yahoo.finance.quotes%20where%20symbol%20in%20("+symbols+")%0A%09%09&env=http%3A%2F%2Fdatatables.org%2Falltables.env&format=json";
+    var callback = function(json) {
+          //alert(json.query.results.quote[0].LastTradePriceOnly);
+          var table = document.getElementById("tab1").getElementsByTagName('tbody')[0];
+          for (var i = 0, row; row = table.rows[i]; i++) {
+              org_price = row.cells[2].innerText;
+              cur_price = json.query.results.quote[i].LastTradePriceOnly;
+              row.cells[3].innerText = cur_price;
+              if (cur_price > 0 ){
+                  row.cells[4].innerText = ((cur_price / org_price - 1) * 100).toFixed(2) + "%";  
+              }
+          }
+    };
+    $.getJSON(url,callback);
+</script>
